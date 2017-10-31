@@ -91,8 +91,12 @@ ColumnCompiler.prototype.getModifiers = function() {
 // Types
 // ------
 
-ColumnCompiler.prototype.increments = 'integer not null primary key autoincrement';
-ColumnCompiler.prototype.bigincrements = 'integer not null primary key autoincrement';
+ColumnCompiler.prototype.increments     =
+ColumnCompiler.prototype.bigincrements  = function({ primaryKey = true } = {}){
+  return primaryKey ?
+    'integer not null primary key autoincrement' :
+    'integer not null autoincrement';
+};
 ColumnCompiler.prototype.integer       =
 ColumnCompiler.prototype.smallint      =
 ColumnCompiler.prototype.mediumint = 'integer';

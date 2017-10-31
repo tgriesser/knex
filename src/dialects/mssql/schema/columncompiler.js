@@ -18,9 +18,17 @@ inherits(ColumnCompiler_MSSQL, ColumnCompiler);
 
 assign(ColumnCompiler_MSSQL.prototype, {
 
-  increments: 'int identity(1,1) not null primary key',
+  increments({ primaryKey = true } = {}){
+    return primaryKey ?
+      'int identity(1,1) not null primary key' :
+      'int identity(1,1) not null';
+  },
 
-  bigincrements: 'bigint identity(1,1) not null primary key',
+  bigincrements({ primaryKey = true } = {}){
+    return primaryKey ?
+      'bigint identity(1,1) not null primary key' :
+      'bigint identity(1,1) not null';
+  },
 
   bigint: 'bigint',
 

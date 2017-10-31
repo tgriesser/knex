@@ -30,6 +30,16 @@ describe(dialect + " SchemaBuilder", function() {
     expect(tableSql[0].sql).to.equal('create table `users` (`id` int unsigned not null auto_increment primary key, `email` varchar(255) collate \'utf8_unicode_ci\')');
   });
 
+  it('test basic create table with incrementing without primary key', function(){
+    tableSql = client.schemaBuilder().createTable('users', function(table) {
+      table.increments('id');
+      table.increments('other_id', { primaryKey: false });
+    });
+
+    equal(1, tableSql.toSQL().length);
+    expect(tableSql.toSQL()[0].sql).to.equal('create table `users` (`id` int unsigned not null auto_increment primary key, `other_id` int unsigned not null auto_increment)');
+  });
+
   it('test basic create table with charset and collate', function() {
     tableSql = client.schemaBuilder().createTable('users', function(table) {
       table.increments('id');
@@ -260,6 +270,15 @@ describe(dialect + " SchemaBuilder", function() {
 
     equal(1, tableSql.length);
     expect(tableSql[0].sql).to.equal('alter table `users` add `id` bigint unsigned not null auto_increment primary key');
+  });
+
+  it('test adding big incrementing id without primary key', function() {
+    tableSql = client.schemaBuilder().table('users', function() {
+      this.bigIncrements('id', { primaryKey: false });
+    }).toSQL();
+
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('alter table `users` add `id` bigint unsigned not null auto_increment');
   });
 
   it('test adding column after another column', function() {

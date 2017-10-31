@@ -26,14 +26,14 @@ assign(ColumnCompiler_Oracle.prototype, {
     });
   },
 
-  increments () {
+  increments ({ primaryKey = true } = {}) {
     this._createAutoIncrementTriggerAndSequence();
-    return 'integer not null primary key';
+    return primaryKey ? 'integer not null primary key' : 'integer not null';
   },
 
-  bigincrements () {
+  bigincrements ({ primaryKey = true } = {}) {
     this._createAutoIncrementTriggerAndSequence();
-    return 'number(20, 0) not null primary key';
+    return primaryKey ? 'number(20, 0) not null primary key' : 'number(20, 0) not null';
   },
 
   floating(precision) {

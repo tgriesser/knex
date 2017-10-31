@@ -18,7 +18,9 @@ assign(ColumnCompiler_PG.prototype, {
 
   // Types
   // ------
-  bigincrements: 'bigserial primary key',
+  bigincrements({ primaryKey = true } = {}){
+    return primaryKey ? 'bigserial primary key' : 'bigserial';
+  },
   bigint: 'bigint',
   binary: 'bytea',
 
@@ -36,7 +38,9 @@ assign(ColumnCompiler_PG.prototype, {
 
   double: 'double precision',
   floating: 'real',
-  increments: 'serial primary key',
+  increments({ primaryKey = true } = {}) {
+    return primaryKey ? 'serial primary key' : 'serial';
+  },
   json(jsonb) {
     if (jsonb) helpers.deprecate('json(true)', 'jsonb()')
     return jsonColumn(this.client, jsonb);

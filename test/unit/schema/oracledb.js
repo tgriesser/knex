@@ -32,6 +32,15 @@ describe("OracleDb SchemaBuilder", function() {
     expect(tableSql.toSQL()[1].sql).to.equal("DECLARE PK_NAME VARCHAR(200); BEGIN  EXECUTE IMMEDIATE (\'CREATE SEQUENCE \"users_seq\"\');  SELECT cols.column_name INTO PK_NAME  FROM all_constraints cons, all_cons_columns cols  WHERE cons.constraint_type = \'P\'  AND cons.constraint_name = cols.constraint_name  AND cons.owner = cols.owner  AND cols.table_name = \'users\';  execute immediate (\'create or replace trigger \"users_autoinc_trg\"  BEFORE INSERT on \"users\"  for each row  declare  checking number := 1;  begin    if (:new.\"\' || PK_NAME || \'\" is null) then      while checking >= 1 loop        select \"users_seq\".nextval into :new.\"\' || PK_NAME || \'\" from dual;        select count(\"\' || PK_NAME || \'\") into checking from \"users\"        where \"\' || PK_NAME || \'\" = :new.\"\' || PK_NAME || \'\";      end loop;    end if;  end;\'); END;");
   });
 
+  it('test basic create table with incrementing without primary key', function(){
+    tableSql = client.schemaBuilder().createTableIfNotExists('users', function(table) {
+      table.increments('id', { primaryKey: false });
+    });
+
+    equal(2, tableSql.toSQL().length);
+    expect(tableSql.toSQL()[0].sql).to.equal("begin execute immediate 'create table \"users\" (\"id\" integer not null)'; exception when others then if sqlcode != -955 then raise; end if; end;");
+  });
+
   it('test drop table', function() {
     tableSql = client.schemaBuilder().dropTable('users').toSQL();
 
@@ -242,6 +251,15 @@ describe("OracleDb SchemaBuilder", function() {
     equal(2, tableSql.length);
     expect(tableSql[0].sql).to.equal('alter table "users" add "id" number(20, 0) not null primary key');
     expect(tableSql[1].sql).to.equal('DECLARE PK_NAME VARCHAR(200); BEGIN  EXECUTE IMMEDIATE (\'CREATE SEQUENCE \"users_seq\"\');  SELECT cols.column_name INTO PK_NAME  FROM all_constraints cons, all_cons_columns cols  WHERE cons.constraint_type = \'P\'  AND cons.constraint_name = cols.constraint_name  AND cons.owner = cols.owner  AND cols.table_name = \'users\';  execute immediate (\'create or replace trigger \"users_autoinc_trg\"  BEFORE INSERT on \"users\"  for each row  declare  checking number := 1;  begin    if (:new.\"\' || PK_NAME || \'\" is null) then      while checking >= 1 loop        select \"users_seq\".nextval into :new.\"\' || PK_NAME || \'\" from dual;        select count(\"\' || PK_NAME || \'\") into checking from \"users\"        where \"\' || PK_NAME || \'\" = :new.\"\' || PK_NAME || \'\";      end loop;    end if;  end;\'); END;');
+  });
+
+  it('test adding big incrementing id without primary key', function() {
+    tableSql = client.schemaBuilder().table('users', function() {
+      this.bigIncrements('id', { primaryKey: false });
+    }).toSQL();
+
+    equal(2, tableSql.length);
+    expect(tableSql[0].sql).to.equal('alter table "users" add "id" number(20, 0) not null');
   });
 
   it('test rename column', function() {
