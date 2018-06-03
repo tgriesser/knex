@@ -132,6 +132,11 @@ ColumnCompiler.prototype.specifictype = type => type;
 // Modifiers
 // -------
 
+// Compiles the Check constraint on the table
+ColumnCompiler.prototype.check = function(logic) {
+    return `check (${logic})`
+};
+
 ColumnCompiler.prototype.nullable = nullable => nullable === false ? 'not null' : 'null';
 ColumnCompiler.prototype.notNullable = function() {
   return this.nullable(false);

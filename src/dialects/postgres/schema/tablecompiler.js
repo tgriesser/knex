@@ -94,6 +94,11 @@ TableCompiler_PG.prototype.comment = function(comment) {
   this.pushQuery(`comment on table ${this.tableName()} is '${this.single.comment}'`);
 };
 
+TableCompiler_PG.prototype.check = function(logic) {
+  const name = this.formatter.wrap(`${this.tableNameRaw}_check`);
+  this.pushQuery(`alter table ${this.tableName()} add constraint ${name} check (${logic})`);
+};
+
 // Indexes:
 // -------
 

@@ -46,7 +46,7 @@ each([
 
   // Each of the index methods can be called individually, with the
   // column name to be used, e.g. table.unique('column').
-  'index', 'primary', 'unique',
+  'index', 'primary', 'unique', 'check',
 
   // Key specific
   'dropPrimary', 'dropUnique', 'dropIndex', 'dropForeign'

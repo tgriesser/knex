@@ -9,7 +9,7 @@ import { assign } from 'lodash'
 
 function ColumnCompiler_PG() {
   ColumnCompiler.apply(this, arguments);
-  this.modifiers = ['nullable', 'defaultTo', 'comment']
+  this.modifiers = ['nullable', 'defaultTo', 'comment', 'check']
 }
 inherits(ColumnCompiler_PG, ColumnCompiler);
 

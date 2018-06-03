@@ -23,7 +23,7 @@ export default function ColumnBuilder(client, tableBuilder, type, args) {
 // All of the modifier methods that can be used to modify the current query.
 const modifiers = [
   'default', 'defaultsTo', 'defaultTo', 'unsigned',
-  'nullable', 'first', 'after', 'comment', 'collate'
+  'nullable', 'first', 'after', 'comment', 'collate', 'check'
 ];
 
 // Aliases for convenience.
