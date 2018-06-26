@@ -69,7 +69,7 @@ assign(TableCompiler_MySQL.prototype, {
     const wrapped = this.formatter.wrap(from) + ' ' + this.formatter.wrap(to);
 
     this.pushQuery({
-      sql: `show fields from ${table} where field = ` +
+      sql: `show full fields from ${table} where field = ` +
         this.formatter.parameter(from),
       output(resp) {
         const column = resp[0];
@@ -87,6 +87,9 @@ assign(TableCompiler_MySQL.prototype, {
               }
               if(column.Default !== void 0 && column.Default !== null) {
                 sql += ` DEFAULT '${column.Default}'`
+              }
+              if (column.Collation !== void 0 && column.Collation !== null) {
+                sql += ` COLLATE '${column.Collation}'`;
               }
 
               return runner.query({

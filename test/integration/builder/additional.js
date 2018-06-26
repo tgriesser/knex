@@ -464,7 +464,7 @@ module.exports = function(knex) {
         return knex.schema.table('accounts', function(t) {
           t.renameColumn('about', 'about_col');
         }).testSql(function(tester) {
-          tester('mysql', ["show fields from `accounts` where field = ?"]);
+          tester('mysql', ["show full fields from `accounts` where field = ?"]);
           tester('postgresql', ["alter table \"accounts\" rename \"about\" to \"about_col\""]);
           tester('pg-redshift', ["alter table \"accounts\" rename \"about\" to \"about_col\""]);
           tester('sqlite3', ["PRAGMA table_info(`accounts`)"]);
