@@ -28,10 +28,9 @@ assign(SchemaCompiler_MSSQL.prototype, {
 
   // Check whether a table exists on the query.
   hasTable(tableName) {
-    const formattedTable = this.formatter.parameter(this.formatter.wrap(tableName));
     const sql =
-      `select object_id from sys.tables ` +
-      `where object_id = object_id(${formattedTable})`;
+      `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES ` +
+      `WHERE TABLE_NAME = '${tableName}'`;
     this.pushQuery({ sql, output: resp => resp.length > 0 });
   },
 
