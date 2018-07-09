@@ -634,6 +634,41 @@ module.exports = function(knex) {
           t.dropIndex('first_name');
         });
       });
+
+      describe('supports partial indexes - postgres, sqlite, and mssql', function() {
+        if(!knex || !knex.client ||
+           !(/postgres/i.test(knex.client.dialect) ||
+             /sqlite/i.test(knex.client.dialect) ||
+             /mssql/i.test(knex.client.dialect)))
+        {
+          return Promise.resolve();
+        }
+
+        it('allows creating indexes with predicate', function() {
+          return knex.schema.table('test_table_one', function(t) {
+            t.index('first_name', 'first_name_idx', knex.whereRaw("first_name = 'brandon'"));
+            t.index('phone', 'phone_idx', knex.whereNotNull('phone'));
+          });
+        });
+
+        if (knex && knex.client && /postgres/i.test(knex.client.dialect)) {
+          it('actually stores the predicate in the Postgres server', function() {
+            return knex.schema.table('test_table_one', function(t) {
+              t.index('phone', 'phone_idx_2', knex.whereNotNull('phone'));
+            }).then(function() {
+              return knex.from('pg_class')
+                .innerJoin('pg_index', 'pg_index.indexrelid', 'pg_class.oid')
+                .where({
+                  relname: 'phone_idx_2',
+                  indisvalid: true
+                })
+                .whereNotNull('indpred');
+            }).then(function (results) {
+              expect(results).to.not.be.empty;
+            });
+          })
+        }
+      });
     });
 
 

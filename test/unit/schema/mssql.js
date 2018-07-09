@@ -194,6 +194,22 @@ describe("MSSQL SchemaBuilder", function() {
     expect(tableSql[0].sql).to.equal('CREATE INDEX [baz] ON [users] ([foo], [bar])');
   });
 
+  it('test adding index with a predicate', function() {
+    tableSql = client.schemaBuilder().table('users', function(table) {
+      table.index(['foo', 'bar'], 'baz', client.queryBuilder().whereRaw('email = "foo@bar"'));
+    }).toSQL();
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('CREATE INDEX [baz] ON [users] ([foo], [bar]) where email = "foo@bar"');
+  });
+
+  it('test adding index with a where not null predicate', function() {
+    tableSql = client.schemaBuilder().table('users', function(table) {
+      table.index(['foo', 'bar'], 'baz', client.queryBuilder().whereNotNull('email'));
+    }).toSQL();
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('CREATE INDEX [baz] ON [users] ([foo], [bar]) where [email] is not null');
+  });
+
   it('test adding foreign key', function() {
     tableSql = client.schemaBuilder().table('users', function() {
       this.foreign('foo_id').references('id').on('orders');

@@ -102,9 +102,14 @@ assign(TableCompiler_MSSQL.prototype, {
     }));
   },
 
-  index (columns, indexName) {
+  index (columns, indexName, predicateBuilder) {
     indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand('index', this.tableNameRaw, columns);
-    this.pushQuery(`CREATE INDEX ${indexName} ON ${this.tableName()} (${this.formatter.columnize(columns)})`);
+
+    const predicate = predicateBuilder ?
+      ' ' + this.client.queryCompiler(predicateBuilder).where() :
+      '';
+
+    this.pushQuery(`CREATE INDEX ${indexName} ON ${this.tableName()} (${this.formatter.columnize(columns)})${predicate}`);
   },
 
   primary (columns, constraintName) {

@@ -106,10 +106,18 @@ TableCompiler_PG.prototype.unique = function(columns, indexName) {
   this.pushQuery(`alter table ${this.tableName()} add constraint ${indexName}` +
     ' unique (' + this.formatter.columnize(columns) + ')');
 };
-TableCompiler_PG.prototype.index = function(columns, indexName, indexType) {
+TableCompiler_PG.prototype.index = function(columns, indexName, indexType, predicateBuilder) {
+  // Making index type optional when specifying a predicate.
+  if (indexType && typeof indexType.toSQL === 'function') {
+    predicateBuilder = indexType;
+    indexType = null;
+  }
+
+  const predicate = predicateBuilder ? ' ' + this.client.queryCompiler(predicateBuilder).where() : '';
+
   indexName = indexName ? this.formatter.wrap(indexName) : this._indexCommand('index', this.tableNameRaw, columns);
   this.pushQuery(`create index ${indexName} on ${this.tableName()}${indexType && (` using ${indexType}`) || ''}` +
-    ' (' + this.formatter.columnize(columns) + ')');
+    ' (' + this.formatter.columnize(columns) + ')' + `${predicate}`);
 };
 TableCompiler_PG.prototype.dropPrimary = function(constraintName) {
   constraintName = constraintName ? this.formatter.wrap(constraintName) : this.formatter.wrap(this.tableNameRaw + '_pkey');

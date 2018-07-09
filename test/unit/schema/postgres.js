@@ -389,6 +389,30 @@ describe("PostgreSQL SchemaBuilder", function() {
     expect(tableSql[1].sql).to.equal('create index "users_name_index" on "users" using gist ("name")');
   });
 
+  it("adding index with a predicate", function() {
+    tableSql = client.schemaBuilder().table('users', function(table) {
+      table.index(['foo', 'bar'], 'baz', client.queryBuilder().whereRaw('email = "foo@bar"'));
+    }).toSQL();
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('create index "baz" on "users" ("foo", "bar") where email = "foo@bar"');
+  });
+
+  it("adding index with an index type and a predicate", function() {
+    tableSql = client.schemaBuilder().table('users', function(table) {
+      table.index(['foo', 'bar'], 'baz', 'gist', client.queryBuilder().whereRaw('email = "foo@bar"'));
+    }).toSQL();
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('create index "baz" on "users" using gist ("foo", "bar") where email = "foo@bar"');
+  });
+
+  it("adding index with a where not null predicate", function() {
+    tableSql = client.schemaBuilder().table('users', function(table) {
+      table.index(['foo', 'bar'], 'baz', client.queryBuilder().whereNotNull('email'));
+    }).toSQL();
+    equal(1, tableSql.length);
+    expect(tableSql[0].sql).to.equal('create index "baz" on "users" ("foo", "bar") where "email" is not null');
+  });
+
   it("adding incrementing id", function() {
     tableSql = client.schemaBuilder().table('users', function(table) {
       table.increments('id');

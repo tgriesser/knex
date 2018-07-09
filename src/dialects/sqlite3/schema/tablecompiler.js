@@ -64,12 +64,17 @@ TableCompiler_SQLite3.prototype.unique = function(columns, indexName) {
 };
 
 // Compile a plain index key command.
-TableCompiler_SQLite3.prototype.index = function(columns, indexName) {
+TableCompiler_SQLite3.prototype.index = function(columns, indexName, predicateBuilder) {
   indexName = indexName
     ? this.formatter.wrap(indexName)
     : this._indexCommand('index', this.tableNameRaw, columns);
   columns = this.formatter.columnize(columns);
-  this.pushQuery(`create index ${indexName} on ${this.tableName()} (${columns})`);
+
+  const predicate = predicateBuilder ?
+    ' ' + this.client.queryCompiler(predicateBuilder).where() :
+    '';
+
+  this.pushQuery(`create index ${indexName} on ${this.tableName()} (${columns})${predicate}`);
 };
 
 TableCompiler_SQLite3.prototype.primary =
