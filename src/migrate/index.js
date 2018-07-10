@@ -213,6 +213,9 @@ export default class Migrator {
   }
 
   _getLockTableName() {
+    if(this.config.lockTableName) {
+      return this.config.lockTableName
+    }
     return this.config.tableName + '_lock';
   }
 
