@@ -4,6 +4,7 @@
 // -------
 import inherits from 'inherits';
 import TableCompiler from '../../../schema/tablecompiler';
+import { getCharsetAndCollation } from './charset-handler';
 import Promise from 'bluebird';
 
 import { assign } from 'lodash';
@@ -31,11 +32,13 @@ assign(TableCompiler_MySQL.prototype, {
       conn = client.connectionSettings;
     }
 
-    const charset = this.single.charset || conn.charset || '';
-    const collation = this.single.collate || conn.collate || '';
+    const { charset, collation } = getCharsetAndCollation(
+      this.single,
+      conn,
+      client.driverName
+    );
     const engine = this.single.engine || '';
 
-    // var conn = builder.client.connectionSettings;
     if (charset) sql += ` default character set ${charset}`;
     if (collation) sql += ` collate ${collation}`;
     if (engine) sql += ` engine = ${engine}`;

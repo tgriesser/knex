@@ -31,6 +31,7 @@ describe('Query Building Tests', function() {
   require('./unit/schema/oracledb');
   require('./unit/migrate/migration-list-resolver');
   require('./unit/seed/seeder');
+  require('./test/unit/util/mysql-charset-handler');
 });
 
 describe('Integration Tests', function() {
