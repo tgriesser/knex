@@ -11,6 +11,7 @@ function QueryCompiler_MSSQL(client, builder) {
 inherits(QueryCompiler_MSSQL, QueryCompiler);
 
 const components = [
+  'comments',
   'columns',
   'join',
   'lock',

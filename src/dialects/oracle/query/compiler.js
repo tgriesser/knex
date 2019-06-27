@@ -17,6 +17,7 @@ const QueryCompiler = require('../../../query/compiler');
 const { ReturningHelper } = require('../utils');
 
 const components = [
+  'comments',
   'columns',
   'join',
   'where',

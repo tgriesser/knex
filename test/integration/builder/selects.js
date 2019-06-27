@@ -734,6 +734,28 @@ module.exports = function(knex) {
       });
     });
 
+    it('#1982 - Allow comments in db', function() {
+      return knex('accounts')
+        .comment('Integration Comment')
+        .select('first_name', 'email')
+        .where({ id: 1 })
+        .then(function(results) {
+          expect(results).to.have.length(1);
+          return true;
+        });
+    });
+
+    it('#1982 (2) - Comments test against bindings', function() {
+      return knex('accounts')
+        .comment('Integration Comment??')
+        .select('first_name', 'email')
+        .where({ id: 1 })
+        .then(function(results) {
+          expect(results).to.have.length(1);
+          return true;
+        });
+    });
+
     it('#1276 - Dates NULL should be returned as NULL, not as new Date(null)', function() {
       return knex.schema
         .dropTableIfExists('DatesTest')
