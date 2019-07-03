@@ -211,55 +211,68 @@ assign(QueryCompiler.prototype, {
     );
   },
 
-  _aggregate(stmt, { aliasSeparator = ' as ', distinctParentheses } = {}) {
+  _aggregate(
+    stmt,
+    {
+      aliasSeparator = ' as ',
+      distinctColumn,
+      distinctParentheses,
+      fromDistinct,
+    } = {}
+  ) {
     const value = stmt.value;
     const method = stmt.method;
-    const distinct = stmt.aggregateDistinct ? 'distinct ' : '';
-    const wrap = (identifier) => this.formatter.wrap(identifier);
-    const addAlias = (value, alias) => {
-      if (alias) {
-        return value + aliasSeparator + wrap(alias);
+
+    const parseColumns = (column) => {
+      let alias;
+      let columns = column;
+      if (!Array.isArray(column)) {
+        if (typeof column === 'object') {
+          const keys = Object.keys(column);
+          alias = keys[0];
+          columns = column[alias];
+        } else {
+          // Allows us to speciy an alias for the aggregate types.
+          const splitOn = column.toLowerCase().indexOf(' as ');
+          if (splitOn !== -1) {
+            alias = column.slice(splitOn + 4);
+            columns = column.slice(0, splitOn);
+          }
+        }
       }
-      return value;
-    };
-    const aggregateArray = (value, alias) => {
-      let columns = value.map(wrap).join(', ');
-      if (distinct) {
-        const openParen = distinctParentheses ? '(' : ' ';
-        const closeParen = distinctParentheses ? ')' : '';
-        columns = distinct.trim() + openParen + columns + closeParen;
-      }
-      const aggregated = `${method}(${columns})`;
-      return addAlias(aggregated, alias);
-    };
-    const aggregateString = (value, alias) => {
-      const aggregated = `${method}(${distinct + wrap(value)})`;
-      return addAlias(aggregated, alias);
+      return { columns, alias };
     };
 
-    if (Array.isArray(value)) {
-      return aggregateArray(value);
-    }
+    const wrapColumns = (columns) => {
+      return ((Array.isArray(columns) && columns) || [columns])
+        .map(this.formatter.wrap)
+        .join(',');
+    };
 
-    if (typeof value === 'object') {
-      const keys = Object.keys(value);
-      const alias = keys[0];
-      const column = value[alias];
-      if (Array.isArray(column)) {
-        return aggregateArray(column, alias);
+    const distinctColumns = (columns) =>
+      distinctParentheses ? `distinct(${columns})` : `distinct ${columns}`;
+
+    const { columns, alias } = parseColumns(value);
+    let wrappedColumns = wrapColumns(columns);
+
+    if (stmt.aggregateDistinct) {
+      // Support distinct as in `SELECT ${method}(${columns})
+      if (distinctColumn || fromDistinct) {
+        const distinctColumns = distinctColumns(
+          distinctColumn ? wrapColumns(distinctColumn) : wrappedColumns
+        );
+        this.single.table = ` (select ${distinctColumns} from ${
+          this.single.table
+        }) ${this.single.table}`;
+      } else {
+        wrappedColumns = distinctColumns(wrappedColumns);
       }
-      return aggregateString(column, alias);
     }
 
-    // Allows us to speciy an alias for the aggregate types.
-    const splitOn = value.toLowerCase().indexOf(' as ');
-    if (splitOn !== -1) {
-      const column = value.slice(0, splitOn);
-      const alias = value.slice(splitOn + 4);
-      return aggregateString(column, alias);
-    }
-
-    return aggregateString(value);
+    const aggregated = `${method}(${wrappedColumns})`;
+    return alias
+      ? aggregated + aliasSeparator + this.formatter.wrap(alias)
+      : aggregated;
   },
 
   aggregate(stmt) {

@@ -901,17 +901,17 @@ assign(Builder.prototype, {
       columns = columns[0];
     }
 
-    return this._aggregate('count', columns, true);
+    return this._aggregate('count', columns, { aggregateDistinct: true });
   },
 
   // Retrieve the sum of the distinct values of a given column.
   sumDistinct(column) {
-    return this._aggregate('sum', column, true);
+    return this._aggregate('sum', column, { aggregateDistinct: true });
   },
 
   // Retrieve the vg of the distinct results of the query.
   avgDistinct(column) {
-    return this._aggregate('avg', column, true);
+    return this._aggregate('avg', column, { aggregateDistinct: true });
   },
 
   // Increments a column's value by the specified amount.
@@ -1164,14 +1164,19 @@ assign(Builder.prototype, {
   },
 
   // Helper for compiling any aggregate queries.
-  _aggregate(method, column, aggregateDistinct) {
-    this._statements.push({
-      grouping: 'columns',
-      type: column instanceof Raw ? 'aggregateRaw' : 'aggregate',
-      method,
-      value: column,
-      aggregateDistinct: aggregateDistinct || false,
-    });
+  _aggregate(method, column, stmtOpts = {}) {
+    this._statements.push(
+      Object.assign(
+        {},
+        {
+          grouping: 'columns',
+          type: column instanceof Raw ? 'aggregateRaw' : 'aggregate',
+          method,
+          value: column,
+        },
+        stmtOpts
+      )
+    );
     return this;
   },
 
