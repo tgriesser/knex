@@ -65,6 +65,16 @@ function initKnex(env, opts) {
   }
 
   const resolvedConfig = resolveEnvironmentConfig(opts, env.configuration);
+
+  // override connection, client and migrationsTableName
+  // if specified through cmd line arguments
+
+  if (opts.connection) resolvedConfig.connection = opts.connection;
+  if (opts.client) resolvedConfig.client = opts.client;
+  if (opts.migrationsTableName) {
+    resolvedConfig.migrations.tableName = opts.migrationsTableName;
+  }
+
   const knex = require(env.modulePath);
   return knex(resolvedConfig);
 }
