@@ -1598,12 +1598,16 @@ declare namespace Knex {
     alter(): ColumnBuilder;
     queryContext(context: any): ColumnBuilder;
   }
+  
+  interface ForeignKeyBuilder {
+    withKeyName(keyName: string): ColumnBuilder;
+  }
 
-  interface ForeignConstraintBuilder {
+  interface ForeignConstraintBuilder extends ForeignKeyBuilder {
     references(columnName: string): ReferencingColumnBuilder;
   }
 
-  interface MultikeyForeignConstraintBuilder {
+  interface MultikeyForeignConstraintBuilder extends ForeignKeyBuilder {
     references(columnNames: string[]): ReferencingColumnBuilder;
   }
 
