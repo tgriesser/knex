@@ -1,6 +1,6 @@
 'use strict';
 const tape = require('tape');
-const debug = require('debug')('knex:tests');
+const debug = require('anylogger')('knex:tests');
 
 module.exports = function (tableName, knex) {
   return function (name, dialects, cb) {

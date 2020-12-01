@@ -1,3 +1,4 @@
+const log = require('anylogger')('knex:cli');
 const { DEFAULT_EXT, DEFAULT_TABLE_NAME } = require('./constants');
 const { resolveClientNameWithAliases } = require('../../lib/helpers');
 const fs = require('fs');
@@ -35,11 +36,11 @@ function resolveEnvironmentConfig(opts, allConfigs, configFilePath) {
   const result = allConfigs[environment] || allConfigs;
 
   if (allConfigs[environment]) {
-    console.log('Using environment:', color.magenta(environment));
+    log.log('Using environment:', color.magenta(environment));
   }
 
   if (!result) {
-    console.log(color.red('Warning: unable to read knexfile config'));
+    log.log(color.red('Warning: unable to read knexfile config'));
     process.exit(1);
   }
 
@@ -58,23 +59,23 @@ function resolveEnvironmentConfig(opts, allConfigs, configFilePath) {
 
 function exit(text) {
   if (text instanceof Error) {
-    console.error(
+    log.error(
       color.red(`${text.detail ? `${text.detail}\n` : ''}${text.stack}`)
     );
   } else {
-    console.error(color.red(text));
+    log.error(color.red(text));
   }
   process.exit(1);
 }
 
 function success(text) {
-  console.log(text);
+  log.log(text);
   process.exit(0);
 }
 
 function checkLocalModule(env) {
   if (!env.modulePath) {
-    console.log(
+    log.log(
       color.red('No local knex install found in:'),
       color.magenta(tildify(env.cwd))
     );
@@ -132,7 +133,7 @@ function getStubPath(configKey, env, opts) {
 
   // using stub <name> must have config[configKey].directory defined
   if (!stubDirectory) {
-    console.log(color.red('Failed to load stub'), color.magenta(stub));
+    log.log(color.red('Failed to load stub'), color.magenta(stub));
     exit(`config.${configKey}.directory in knexfile must be defined`);
   }
 

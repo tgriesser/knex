@@ -32,9 +32,10 @@
     "stress:destroy": "docker-compose -f scripts/stress-test/docker-compose.yml stop"
   },
   "dependencies": {
+    "anylogger": "^1.0.7",
     "colorette": "1.2.1",
     "commander": "^6.2.0",
-    "debug": "4.3.1",
+    "docker-compose": "^0.23.5",
     "esm": "^3.2.25",
     "getopts": "2.2.5",
     "interpret": "^2.2.0",
@@ -78,12 +79,14 @@
   "devDependencies": {
     "@types/node": "^14.14.10",
     "JSONStream": "^1.3.5",
+    "anylogger-debug": "^1.0.3",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-subset-in-order": "^2.1.4",
     "cli-testlab": "^2.1.1",
     "coveralls": "^3.1.0",
     "cross-env": "^7.0.2",
+    "debug": "^4.3.1",
     "dtslint": "4.0.6",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
@@ -112,6 +115,7 @@
     "ts-node": "^9.0.0",
     "tsd": "^0.13.1",
     "typescript": "4.1.2",
+    "ulog": "^2.0.0-beta.9",
     "webpack-cli": "^3.3.12"
   },
   "buildDependencies": [

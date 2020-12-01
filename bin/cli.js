@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-/* eslint no-console:0, no-var:0 */
+/* eslint no-var:0 */
+const log = require('anylogger')('knex:cli');
 const Liftoff = require('liftoff');
 const interpret = require('interpret');
 const path = require('path');
@@ -38,10 +39,7 @@ async function initKnex(env, opts) {
   checkLocalModule(env);
   if (process.cwd() !== env.cwd) {
     process.chdir(env.cwd);
-    console.log(
-      'Working directory changed to',
-      color.magenta(tildify(env.cwd))
-    );
+    log.log('Working directory changed to', color.magenta(tildify(env.cwd)));
   }
 
   env.configuration = env.configPath
@@ -363,11 +361,11 @@ const cli = new Liftoff({
 });
 
 cli.on('require', function (name) {
-  console.log('Requiring external module', color.magenta(name));
+  log.log('Requiring external module', color.magenta(name));
 });
 
 cli.on('requireFail', function (name) {
-  console.log(color.red('Failed to load external module'), color.magenta(name));
+  log.log(color.red('Failed to load external module'), color.magenta(name));
 });
 
 // FYI: The handling for the `--cwd` and `--knexfile` arguments is a bit strange,

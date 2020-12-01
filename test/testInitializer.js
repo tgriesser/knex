@@ -1,6 +1,8 @@
+require('anylogger-debug');
+const log = require('anylogger')('knex:tests');
+
 let isInitted = false;
 
-/* eslint-disable no-console */
 function initTests() {
   if (isInitted) {
     return;
@@ -13,7 +15,7 @@ function initTests() {
   const EXPECTED_REJECTION_COUNT = 0;
   const rejectionLog = [];
   process.on('unhandledRejection', (reason) => {
-    console.error('Unhandled rejection:', reason);
+    log.error('Unhandled rejection:', reason);
     rejectionLog.push({
       reason,
     });
@@ -21,16 +23,16 @@ function initTests() {
 
   process.on('exit', (code) => {
     if (rejectionLog.length) {
-      console.error(`Unhandled rejections: ${rejectionLog.length}`);
+      log.error(`Unhandled rejections: ${rejectionLog.length}`);
       rejectionLog.forEach((rejection) => {
-        console.error(rejection);
+        log.error(rejection);
       });
 
       if (rejectionLog.length > EXPECTED_REJECTION_COUNT) {
         process.exitCode = code || 1;
       }
     }
-    console.log('No unhandled exceptions');
+    log.log('No unhandled exceptions');
   });
 
   isInitted = true;
