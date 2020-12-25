@@ -124,7 +124,7 @@ module.exports = {
   migrations: {
     directory: __dirname + '/test/jake-util/knexfile_migrations',
   },
-};    
+};
     `,
         { isPathAbsolute: true }
       );
@@ -152,7 +152,7 @@ module.exports = {
   migrations: {
     directory: __dirname + '/test/jake-util/knexfile_migrations',
   },
-};    
+};
     `,
         { isPathAbsolute: true }
       );
@@ -187,7 +187,7 @@ module.exports = {
       directory: __dirname + '/test/jake-util/knexfile_migrations',
     }
   }
-};    
+};
     `,
         { isPathAbsolute: true }
       );
@@ -237,7 +237,7 @@ module.exports = {
     extension: 'ts',
     directory: __dirname + '/test/jake-util/knexfile_migrations',
   },
-};    
+};
     `,
         { isPathAbsolute: true }
       );
@@ -272,7 +272,7 @@ development: {
     directory: __dirname + '/test/jake-util/knexfile_migrations',
   },
   }
-};    
+};
     `,
         { isPathAbsolute: true }
       );
