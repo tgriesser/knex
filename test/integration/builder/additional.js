@@ -319,6 +319,14 @@ module.exports = function (knex) {
       expect(knex.fn.now(6).toQuery()).to.equal('CURRENT_TIMESTAMP(6)');
     });
 
+    it('should list tables', () => {
+      return knex()
+        .listTables()
+        .then((res) => {
+          expect(res).to.be.an('array').that.includes('10_test_table');
+        });
+    });
+
     it('gets the columnInfo', function () {
       return knex('datatype_test')
         .columnInfo()
