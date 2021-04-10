@@ -7,11 +7,13 @@ services:
       - "8474:8474"
       - "23306:23306"
       - "25432:25432"
+      - "25433:25433"
       - "21521:21521"
       - "21433:21433"
     links:
       - "mysql"
       - "postgresql"
+      - "pgnative"
       - "oracledbxe"
       - "mssql"
 
@@ -27,6 +29,14 @@ services:
     image: mdillon/postgis
     ports:
       - "35432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgresrootpassword
+      - POSTGRES_USER=postgres
+
+  pgnative:
+    image: mdillon/postgis
+    ports:
+      - "35433:5432"
     environment:
       - POSTGRES_PASSWORD=postgresrootpassword
       - POSTGRES_USER=postgres

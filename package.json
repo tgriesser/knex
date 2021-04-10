@@ -28,6 +28,7 @@
     "test:mysql2": "cross-env DB=mysql2 npm run test:db",
     "test:sqlite": "cross-env DB=sqlite3 npm run test:db",
     "test:postgres": "cross-env DB=postgres npm run test:db",
+    "test:pgnative": "cross-env DB=pgnative npm run test:db",
     "test:tape": "node test/tape/index.js | tap-spec",
     "test:cli": "cross-env KNEX_PATH=../knex.js KNEX=bin/cli.js jake -f test/jake/Jakefile",
     "db:start": "docker-compose -f scripts/docker-compose.yml up --build -d mysql oracledbxe postgres mssql && docker-compose -f scripts/docker-compose.yml up waitmssql waitmysql waitpostgres waitoracledbxe",
@@ -35,6 +36,8 @@
     "db:stop": "docker-compose -f scripts/docker-compose.yml down",
     "db:start:postgres": "docker-compose -f scripts/docker-compose.yml up --build -d postgres && docker-compose -f scripts/docker-compose.yml up waitpostgres",
     "db:stop:postgres": "docker-compose -f scripts/docker-compose.yml down",
+    "db:start:pgnative": "docker-compose -f scripts/docker-compose.yml up --build -d pgnative && docker-compose -f scripts/docker-compose.yml up waitpgnative",
+    "db:stop:pgnative": "docker-compose -f scripts/docker-compose.yml down",
     "db:start:mysql": "docker-compose -f scripts/docker-compose.yml up --build -d mysql && docker-compose -f scripts/docker-compose.yml up waitmysql",
     "db:stop:mysql": "docker-compose -f scripts/docker-compose.yml down",
     "stress:init": "docker-compose -f scripts/stress-test/docker-compose.yml up --no-start && docker-compose -f scripts/stress-test/docker-compose.yml start",
@@ -67,6 +70,9 @@
       "optional": true
     },
     "pg": {
+      "optional": true
+    },
+    "pg-native": {
       "optional": true
     },
     "sqlite3": {
@@ -104,6 +110,7 @@
     "pg": "^8.6.0",
     "pg-query-stream": "^4.1.0",
     "prettier": "2.3.2",
+    "pg-native": "^3.0.0",
     "rimraf": "^3.0.2",
     "sinon": "^11.1.1",
     "sinon-chai": "^3.7.0",
@@ -174,6 +181,7 @@
     "mysql": false,
     "mysql2": false,
     "pg": false,
+    "pg-native": false,
     "pg-query-stream": false,
     "oracle": false,
     "sqlite3": false,

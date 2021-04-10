@@ -5,6 +5,7 @@ const testConfig =
 
 const Db = {
   PostgresSQL: 'postgres',
+  PgNative: 'pgnative',
   MySQL: 'mysql',
   MySQL2: 'mysql2',
   MSSQL: 'mssql',
@@ -12,7 +13,14 @@ const Db = {
   Oracle: 'oracledb',
 };
 
-const defaultDbs = [Db.PostgresSQL, Db.MySQL, Db.MySQL2, Db.SQLite, Db.MSSQL];
+const defaultDbs = [
+  Db.PostgresSQL,
+  Db.PgNative,
+  Db.MySQL,
+  Db.MySQL2,
+  Db.SQLite,
+  Db.MSSQL,
+];
 
 function getAllDbs() {
   return process.env.DB ? process.env.DB.split(' ') : defaultDbs;
@@ -87,6 +95,21 @@ const testConfigs = {
     connection: testConfig.postgres || {
       adapter: 'postgresql',
       port: 25432,
+      host: 'localhost',
+      database: 'knex_test',
+      user: 'testuser',
+      password: 'knextest',
+    },
+    pool,
+    migrations,
+    seeds,
+  },
+
+  pgnative: {
+    client: Db.PgNative,
+    connection: testConfig.pgnative || {
+      adapter: 'postgresql',
+      port: 25433,
       host: 'localhost',
       database: 'knex_test',
       user: 'testuser',

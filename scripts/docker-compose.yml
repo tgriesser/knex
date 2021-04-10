@@ -84,6 +84,27 @@ services:
       - -c
       - 'until /usr/local/bin/psql postgres://testuser:knextest@postgres/knex_test -c "SELECT 1"; do sleep 5; done'
 
+  pgnative:
+    image: postgres:alpine
+    # see https://www.postgresql.org/docs/current/non-durability.html
+    command: '-c full_page_writes=off -c fsync=off -c synchronous_commit=off'
+    ports:
+      - '25433:5432'
+    environment:
+      - POSTGRES_USER=testuser
+      - POSTGRES_PASSWORD=knextest
+      - POSTGRES_DB=knex_test
+  waitpgnative:
+    image: postgres:alpine
+    links:
+      - pgnative
+    depends_on:
+      - pgnative
+    entrypoint:
+      - bash
+      - -c
+      - 'until /usr/local/bin/psql postgres://testuser:knextest@pgnative/knex_test -c "SELECT 1"; do sleep 5; done'
+
   oracledbxe:
     image: quillbuilduser/oracle-18-xe
     container_name: oracledbxe_container

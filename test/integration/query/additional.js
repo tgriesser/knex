@@ -724,6 +724,9 @@ module.exports = function (knex) {
         [drivers.PostgreSQL]: function () {
           return knex.raw('SELECT pg_sleep(1)');
         },
+        [drivers.PgNative]: function () {
+          return knex.raw('SELECT pg_sleep(1)');
+        },
         [drivers.MySQL]: function () {
           return knex.raw('SELECT SLEEP(1)');
         },
@@ -774,6 +777,9 @@ module.exports = function (knex) {
       // mocha timeout exposes this behavior.
       const testQueries = {
         [drivers.PostgreSQL]: function () {
+          return knex.raw('SELECT pg_sleep(10)');
+        },
+        [drivers.PgNative]: function () {
           return knex.raw('SELECT pg_sleep(10)');
         },
         [drivers.MySQL]: function () {
@@ -882,19 +888,22 @@ module.exports = function (knex) {
       // until the first query finishes. Setting a sleep time longer than the
       // mocha timeout exposes this behavior.
       const testQueries = {
-        pg: function () {
+        [drivers.PostgreSQL]: function () {
           return knex.raw('SELECT pg_sleep(10)');
         },
-        mysql: function () {
+        [drivers.PgNative]: function () {
+          return knex.raw('SELECT pg_sleep(10)');
+        },
+        [drivers.MySQL]: function () {
           return knex.raw('SELECT SLEEP(10)');
         },
-        mysql2: function () {
+        [drivers.MySQL2]: function () {
           return knex.raw('SELECT SLEEP(10)');
         },
-        mssql: function () {
+        [drivers.MsSQL]: function () {
           return knex.raw("WAITFOR DELAY '00:00:10'");
         },
-        oracledb: function () {
+        [drivers.Oracle]: function () {
           return knex.raw('begin dbms_lock.sleep(10); end;');
         },
       };
@@ -940,7 +949,8 @@ module.exports = function (knex) {
 
       const getProcessesQuery = getProcessesQueries[driverName]();
 
-      return knex.transaction((trx) => addTimeout().transacting(trx))
+      return knex
+        .transaction((trx) => addTimeout().transacting(trx))
         .then(function () {
           expect(true).to.equal(false);
         })
@@ -997,6 +1007,9 @@ module.exports = function (knex) {
         [drivers.PostgreSQL]: function () {
           return knexDb.raw('SELECT pg_sleep(10)');
         },
+        [drivers.PgNative]: function () {
+          return knexDb.raw('SELECT pg_sleep(10)');
+        },
         [drivers.MySQL]: function () {
           return knexDb.raw('SELECT SLEEP(10)');
         },
@@ -1022,7 +1035,7 @@ module.exports = function (knex) {
       const getProcessesForDriver = {
         pg: async () => {
           const results = await knex.raw('SELECT * from pg_stat_activity');
-          return _.map(_.filter(results.rows, {state: 'active'}), 'query');
+          return _.map(_.filter(results.rows, { state: 'active' }), 'query');
         },
         mysql: async () => {
           const results = await knex.raw('SHOW PROCESSLIST');
@@ -1043,11 +1056,11 @@ module.exports = function (knex) {
       const getProcesses = getProcessesForDriver[driverName];
 
       try {
-        const promise = query.timeout(50, { cancel: true }).then(_.identity)
+        const promise = query.timeout(50, { cancel: true }).then(_.identity);
 
-        await delay(10)
+        await delay(10);
         const processesBeforeTimeout = await getProcesses();
-        expect(processesBeforeTimeout).to.include(query.toString())
+        expect(processesBeforeTimeout).to.include(query.toString());
 
         await expect(promise).to.eventually.be.rejected.and.to.deep.include({
           timeout: 50,
@@ -1056,7 +1069,7 @@ module.exports = function (knex) {
         });
 
         const processesAfterTimeout = await getProcesses();
-        expect(processesAfterTimeout).to.not.include(query.toString())
+        expect(processesAfterTimeout).to.not.include(query.toString());
       } finally {
         await knexDb.destroy();
       }
