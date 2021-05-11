@@ -106,7 +106,7 @@ const config: Knex.Config = {
   connection: {
     filename: './data.db',
   },
-});
+}
 
 const knexInstance = knex(config);
 
