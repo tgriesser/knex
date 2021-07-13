@@ -2167,6 +2167,7 @@ interface MsSqlConnectionConfigBase {
       maxRetriesOnTransientErrors?: number;
       multiSubnetFailover?: boolean;
       packetSize?: number;
+      trustServerCertificate?: boolean;
     }>;
     pool?: Readonly<{
       min?: number;
