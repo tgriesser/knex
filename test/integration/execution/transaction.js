@@ -7,7 +7,12 @@ const _ = require('lodash');
 const sinon = require('sinon');
 const { KnexTimeoutError } = require('../../../lib/util/timeout');
 const delay = require('../../../lib/execution/internal/delay');
-const { isRedshift, isOracle, isMssql, isPostgreSQL } = require('../../util/db-helpers');
+const {
+  isRedshift,
+  isOracle,
+  isMssql,
+  isPostgreSQL,
+} = require('../../util/db-helpers');
 const { DRIVER_NAMES: drivers } = require('../../util/constants');
 
 module.exports = function (knex) {
@@ -98,7 +103,9 @@ module.exports = function (knex) {
               return knex('test_table_two')
                 .transacting(t)
                 .insert({
-                  account_id: constid ? ++fkid : (id = resp[0]),
+                  account_id: constid
+                    ? ++fkid
+                    : (id = !isNaN(resp[0]) ? resp[0] : resp[0].id),
                   details: '',
                   status: 1,
                 });
@@ -139,7 +146,9 @@ module.exports = function (knex) {
               return knex('test_table_two')
                 .transacting(t)
                 .insert({
-                  account_id: constid ? ++fkid : (id = resp[0]),
+                  account_id: constid
+                    ? ++fkid
+                    : (id = !isNaN(resp[0]) ? resp[0] : resp[0].id),
                   details: '',
                   status: 1,
                 });
@@ -174,7 +183,9 @@ module.exports = function (knex) {
             })
             .then(function (resp) {
               return trx('test_table_two').insert({
-                account_id: constid ? ++fkid : (id = resp[0]),
+                account_id: constid
+                  ? ++fkid
+                  : (id = !isNaN(resp[0]) ? resp[0] : resp[0].id),
                 details: '',
                 status: 1,
               });
@@ -215,7 +226,9 @@ module.exports = function (knex) {
             .then(function (resp) {
               return trx
                 .insert({
-                  account_id: constid ? ++fkid : (id = resp[0]),
+                  account_id: constid
+                    ? ++fkid
+                    : (id = !isNaN(resp[0]) ? resp[0] : resp[0].id),
                   details: '',
                   status: 1,
                 })
@@ -299,7 +312,9 @@ module.exports = function (knex) {
               })
               .then(function (resp) {
                 return trx('test_table_two').insert({
-                  account_id: constid ? ++fkid : (id = resp[0]),
+                  account_id: constid
+                    ? ++fkid
+                    : (id = !isNaN(resp[0]) ? resp[0] : resp[0].id),
                   details: '',
                   status: 1,
                 });
@@ -547,7 +562,7 @@ module.exports = function (knex) {
               updated_at: new Date(),
             })
             .then(function (res0) {
-              insertedId = res0[0];
+              insertedId = !isNaN(res0[0]) ? res0[0] : res0[0].id;
             });
         }
 

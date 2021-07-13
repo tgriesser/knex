@@ -3,7 +3,14 @@
 const _ = require('lodash');
 const { expect } = require('chai');
 const { TEST_TIMESTAMP } = require('../../util/constants');
-const { isMssql, isRedshift, isPostgreSQL, isSQLite, isOracle, isMysql } = require('../../util/db-helpers');
+const {
+  isMssql,
+  isRedshift,
+  isPostgreSQL,
+  isSQLite,
+  isOracle,
+  isMysql,
+} = require('../../util/db-helpers');
 
 module.exports = function (knex) {
   describe('Insert with Triggers', function () {
@@ -113,7 +120,7 @@ module.exports = function (knex) {
               ['id'],
               insertTriggerOptions
             );
-            insertSecondary[secondaryLink] = primaryId[0];
+            insertSecondary[secondaryLink] = primaryId[0].id;
 
             // Test retrieve with trigger
             insertResults = (
@@ -122,7 +129,7 @@ module.exports = function (knex) {
                 ['id'],
                 insertTriggerOptions
               )
-            )[0];
+            )[0].id;
           }
 
           await insertWithReturn();
@@ -153,14 +160,14 @@ module.exports = function (knex) {
             const primaryId = await knex(primaryTable)
               .returning(['id'], insertTriggerOptions)
               .insert([insertPrimary]);
-            insertSecondary[secondaryLink] = primaryId[0];
+            insertSecondary[secondaryLink] = primaryId[0].id;
 
             // Test retrieve with trigger
             insertResults = (
               await knex(secondaryTable)
                 .returning(['id'], insertTriggerOptions)
                 .insert([insertSecondary])
-            )[0];
+            )[0].id;
           }
 
           await insertWithReturn();
@@ -286,7 +293,7 @@ module.exports = function (knex) {
                 1,
                 TEST_TIMESTAMP,
               ],
-              ['1']
+              [{ id: '1' }]
             );
           });
       });
@@ -448,7 +455,7 @@ module.exports = function (knex) {
                 2,
                 TEST_TIMESTAMP,
               ],
-              ['2', '3']
+              [{ id: '2' }, { id: '3' }]
             );
           });
       });
@@ -668,7 +675,7 @@ module.exports = function (knex) {
                 2,
                 TEST_TIMESTAMP,
               ],
-              ['4', '5']
+              [{ id: '4' }, { id: '5' }]
             );
           });
       });
@@ -876,7 +883,7 @@ module.exports = function (knex) {
                 2,
                 TEST_TIMESTAMP,
               ],
-              ['7']
+              [{ id: '7' }]
             );
           });
       });
@@ -932,7 +939,7 @@ module.exports = function (knex) {
                   'mssql',
                   'select top(0) [t].[id] into #out from [trigger_retest_insert] as t left join [trigger_retest_insert] on 0=1;insert into [trigger_retest_insert] output inserted.[id] into #out default values; select [id] from #out; drop table #out;',
                   [],
-                  [1]
+                  [{ id: 1 }]
                 );
               });
           });
@@ -989,7 +996,7 @@ module.exports = function (knex) {
                   'mssql',
                   'select top(0) [t].[id] into #out from [trigger_retest_insert2] as t left join [trigger_retest_insert2] on 0=1;insert into [trigger_retest_insert2] output inserted.[id] into #out default values; select [id] from #out; drop table #out;',
                   [],
-                  [1]
+                  [{ id: 1 }]
                 );
               });
           });

@@ -120,10 +120,10 @@ module.exports = function (knex) {
                 ['id'],
                 triggerOptions
               )
-            )[0];
+            )[0].id;
 
             const updateSecondary = {};
-            updateSecondary[secondaryLink] = primaryId[0];
+            updateSecondary[secondaryLink] = primaryId[0].id;
 
             updateResults = await knex(secondaryTable)
               .where('id', '=', secondaryId)
@@ -132,7 +132,7 @@ module.exports = function (knex) {
 
           await updateWithReturn();
 
-          expect(Number.parseInt(updateResults)).to.be.finite;
+          expect(Number.parseInt(updateResults[0].id)).to.be.finite;
 
           reachedEnd = true;
         });
@@ -168,10 +168,10 @@ module.exports = function (knex) {
                 ['id'],
                 triggerOptions
               )
-            )[0];
+            )[0].id;
 
             const updateSecondary = {};
-            updateSecondary[secondaryLink] = primaryId[0];
+            updateSecondary[secondaryLink] = primaryId[0].id;
 
             updateResults = await knex(secondaryTable)
               .where('id', '=', secondaryId)
@@ -181,7 +181,7 @@ module.exports = function (knex) {
 
           await updateWithReturn();
 
-          expect(Number.parseInt(updateResults)).to.be.finite;
+          expect(Number.parseInt(updateResults[0].id)).to.be.finite;
 
           reachedEnd = true;
         });

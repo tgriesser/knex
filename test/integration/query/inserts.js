@@ -58,7 +58,11 @@ module.exports = function (knex) {
               1,
               TEST_TIMESTAMP,
             ],
-            ['1']
+            [
+              {
+                id: '1',
+              },
+            ]
           );
           tester(
             'pg-redshift',
@@ -103,7 +107,7 @@ module.exports = function (knex) {
                 return v.toString() === '[object ReturningHelper:id]';
               },
             ],
-            ['1']
+            [{ id: '1' }]
           );
           tester(
             'mssql',
@@ -117,7 +121,11 @@ module.exports = function (knex) {
               1,
               TEST_TIMESTAMP,
             ],
-            ['1']
+            [
+              {
+                id: '1',
+              },
+            ]
           );
         });
     });
@@ -188,7 +196,14 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['2', '3']
+            [
+              {
+                id: '2',
+              },
+              {
+                id: '3',
+              },
+            ]
           );
           tester(
             'pg-redshift',
@@ -257,7 +272,7 @@ module.exports = function (knex) {
                 return v.toString() === '[object ReturningHelper:id]';
               },
             ],
-            ['2', '3']
+            [{ id: '2' }, { id: '3' }]
           );
           tester(
             'mssql',
@@ -278,7 +293,14 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['2', '3']
+            [
+              {
+                id: '2',
+              },
+              {
+                id: '3',
+              },
+            ]
           );
         });
     });
@@ -331,7 +353,7 @@ module.exports = function (knex) {
                 return v.toString() === '[object ReturningHelper:id]';
               },
             ],
-            ['1', '2', '3']
+            [{ id: '1' }, { id: '2' }, { id: '3' }]
           );
         })
         .asCallback(function (err) {
@@ -406,7 +428,7 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['4', '5']
+            [{ id: '4' }, { id: '5' }]
           );
           tester(
             'pg-redshift',
@@ -475,7 +497,7 @@ module.exports = function (knex) {
                 return v.toString() === '[object ReturningHelper:id]';
               },
             ],
-            ['4', '5']
+            [{ id: '4' }, { id: '5' }]
           );
           tester(
             'mssql',
@@ -496,7 +518,7 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['4', '5']
+            [{ id: '4' }, { id: '5' }]
           );
         });
     });
@@ -643,7 +665,7 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['7']
+            [{ id: '7' }]
           );
           tester(
             'pg-redshift',
@@ -688,7 +710,7 @@ module.exports = function (knex) {
                 return v.toString() === '[object ReturningHelper:id]';
               },
             ],
-            ['7']
+            [{ id: '7' }]
           );
           tester(
             'mssql',
@@ -702,7 +724,7 @@ module.exports = function (knex) {
               2,
               TEST_TIMESTAMP,
             ],
-            ['7']
+            [{ id: '7' }]
           );
         });
     });
@@ -830,7 +852,7 @@ module.exports = function (knex) {
                 'pg',
                 'insert into "test_default_table" default values returning "id"',
                 [],
-                [1]
+                [{ id: 1 }]
               );
               tester(
                 'pg-redshift',
@@ -852,13 +874,13 @@ module.exports = function (knex) {
                     return v.toString() === '[object ReturningHelper:id]';
                   },
                 ],
-                ['1']
+                [{ id: '1' }]
               );
               tester(
                 'mssql',
                 'insert into [test_default_table] output inserted.[id] default values',
                 [],
-                [1]
+                [{ id: 1 }]
               );
             });
         });
@@ -886,7 +908,7 @@ module.exports = function (knex) {
                 'pg',
                 'insert into "test_default_table2" default values returning "id"',
                 [],
-                [1]
+                [{ id: 1 }]
               );
               tester(
                 'pg-redshift',
@@ -908,13 +930,13 @@ module.exports = function (knex) {
                     return v.toString() === '[object ReturningHelper:id]';
                   },
                 ],
-                ['1']
+                [{ id: '1' }]
               );
               tester(
                 'mssql',
                 'insert into [test_default_table2] output inserted.[id] default values',
                 [],
-                [1]
+                [{ id: 1 }]
               );
             });
         });

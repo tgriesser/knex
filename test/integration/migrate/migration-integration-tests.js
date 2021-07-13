@@ -13,7 +13,14 @@ const config = require('../../knexfile');
 const delay = require('../../../lib/execution/internal/delay');
 const _ = require('lodash');
 const testMemoryMigrations = require('./memory-migrations');
-const { isPostgreSQL, isOracle, isMssql, isMysql, isSQLite, isRedshift } = require('../../util/db-helpers');
+const {
+  isPostgreSQL,
+  isOracle,
+  isMssql,
+  isMysql,
+  isSQLite,
+  isRedshift,
+} = require('../../util/db-helpers');
 
 module.exports = function (knex) {
   rimraf.sync(path.join(__dirname, './migration'));
@@ -226,9 +233,18 @@ module.exports = function (knex) {
                 .del();
             }
             return knex('knex_migrations')
-              .where('id', migration1[0])
-              .orWhere('id', migration2[0])
-              .orWhere('id', migration3[0])
+              .where(
+                'id',
+                !isNaN(migration1[0]) ? migration1[0] : migration1[0].id
+              )
+              .orWhere(
+                'id',
+                !isNaN(migration2[0]) ? migration2[0] : migration2[0].id
+              )
+              .orWhere(
+                'id',
+                !isNaN(migration3[0]) ? migration3[0] : migration3[0].id
+              )
               .del();
           });
       });
