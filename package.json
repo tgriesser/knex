@@ -28,6 +28,7 @@
     "test:mysql2": "cross-env DB=mysql2 npm run test:db",
     "test:sqlite": "cross-env DB=sqlite3 npm run test:db",
     "test:postgres": "cross-env DB=postgres npm run test:db",
+    "test:cockroachdb": "cross-env DB=cockroachdb npm run test:db",
     "test:tape": "node test/tape/index.js | tap-spec",
     "test:cli": "cross-env KNEX_PATH=../knex.js KNEX=bin/cli.js jake -f test/jake/Jakefile",
     "db:start": "docker-compose -f scripts/docker-compose.yml up --build -d mysql oracledbxe postgres mssql && docker-compose -f scripts/docker-compose.yml up waitmssql waitmysql waitpostgres waitoracledbxe",
@@ -37,6 +38,8 @@
     "db:stop:postgres": "docker-compose -f scripts/docker-compose.yml down",
     "db:start:mysql": "docker-compose -f scripts/docker-compose.yml up --build -d mysql && docker-compose -f scripts/docker-compose.yml up waitmysql",
     "db:stop:mysql": "docker-compose -f scripts/docker-compose.yml down",
+    "db:start:cockroachdb": "docker-compose -f scripts/docker-compose.yml up --build -d cockroachdb && docker-compose -f scripts/docker-compose.yml up waitcockroachdb",
+    "db:stop:cockroachdb": "docker-compose -f scripts/docker-compose.yml down",
     "stress:init": "docker-compose -f scripts/stress-test/docker-compose.yml up --no-start && docker-compose -f scripts/stress-test/docker-compose.yml start",
     "stress:test": "node scripts/stress-test/knex-stress-test.js | grep -A 5 -B 60 -- '- STATS '",
     "stress:destroy": "docker-compose -f scripts/stress-test/docker-compose.yml stop"

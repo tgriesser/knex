@@ -84,6 +84,26 @@ services:
       - -c
       - 'until /usr/local/bin/psql postgres://testuser:knextest@postgres/knex_test -c "SELECT 1"; do sleep 5; done'
 
+  cockroachdb:
+    image: cockroachdb/cockroach:latest-v21.1
+    container_name: crdb
+    hostname: crdb
+    command: start-single-node --cluster-name=example-single-node --insecure
+    ports:
+      - "26257:26257"
+      - "8080:8080"
+
+  waitcockroachdb:
+    container_name: crdb-init
+    hostname: crdb-init
+    image: timveil/cockroachdb-remote-client:latest
+    environment:
+      - COCKROACH_HOST=crdb:26257
+      - COCKROACH_INSECURE=true
+      - DATABASE_NAME=test
+    depends_on:
+      - cockroachdb
+
   oracledbxe:
     image: quillbuilduser/oracle-18-xe
     container_name: oracledbxe_container
