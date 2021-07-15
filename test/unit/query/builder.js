@@ -9602,40 +9602,6 @@ describe('QueryBuilder', () => {
     });
   });
 
-  it('should warn to user when use `.returning()` function in MySQL', () => {
-    const loggerConfigForTestingWarnings = {
-      log: {
-        warn: (message) => {
-          if (
-            message ===
-            '.returning() is not supported by mysql and will not have any effect.'
-          ) {
-            throw new Error(message);
-          }
-        },
-      },
-    };
-
-    const mysqlClientForWarnings = new MySQL_Client(
-      Object.assign({ client: 'mysql' }, loggerConfigForTestingWarnings)
-    );
-
-    expect(() => {
-      testsql(
-        qb().into('users').insert({ email: 'foo' }).returning('id'),
-        {
-          mysql: {
-            sql: 'insert into `users` (`email`) values (?)',
-            bindings: ['foo'],
-          },
-        },
-        {
-          mysql: mysqlClientForWarnings,
-        }
-      );
-    }).to.throw(Error);
-  });
-
   it('should warn to user when use `.returning()` function in SQLite3', () => {
     const loggerConfigForTestingWarnings = {
       log: {
