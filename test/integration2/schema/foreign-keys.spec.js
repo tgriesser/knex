@@ -1,7 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const { getAllDbs, getKnexForDb } = require('../util/knex-instance-provider');
-const { isPostgreSQL, isSQLite } = require('../../util/db-helpers');
+const { isPostgreSQL, isSQLite, isOracle } = require('../../util/db-helpers');
 
 describe('Schema', () => {
   describe('Foreign keys', () => {
@@ -133,6 +133,32 @@ describe('Schema', () => {
               'INSERT INTO _knex_temp_alter111 SELECT * FROM foreign_keys_table_one;',
               'DROP TABLE "foreign_keys_table_one"',
               'ALTER TABLE "_knex_temp_alter111" RENAME TO "foreign_keys_table_one"',
+            ]);
+          });
+
+          it('generates correct SQL for the new foreign key operation with an on deferred constraint', async () => {
+            if (!(isPostgreSQL(knex) || isOracle())) {
+              return;
+            }
+
+            const builder = knex.schema.alterTable(
+              'foreign_keys_table_one',
+              (table) => {
+                table
+                  .foreign('fkey_three')
+                  .references('foreign_keys_table_three.id')
+                  .deferred();
+              }
+            );
+
+            const queries = await builder.generateDdlCommands();
+            console.log(queries.sql);
+            expect(queries.sql).to.eql([
+              {
+                bindings: [],
+                sql:
+                  'alter table "foreign_keys_table_one" add constraint "foreign_keys_table_one_fkey_three_foreign" foreign key ("fkey_three") references "foreign_keys_table_three" ("id") deferrable initially immediate ',
+              },
             ]);
           });
 

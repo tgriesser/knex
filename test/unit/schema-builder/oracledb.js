@@ -358,6 +358,19 @@ describe('OracleDb SchemaBuilder', function () {
     );
   });
 
+  it('adds foreign key with deferred', function () {
+    tableSql = client
+      .schemaBuilder()
+      .createTable('person', function (table) {
+        table.integer('user_id').notNull().references('users.id').deferred();
+      })
+      .toSQL();
+    equal(2, tableSql.length);
+    expect(tableSql[1].sql).to.equal(
+      'alter table "person" add constraint "person_user_id_foreign" foreign key ("user_id") references "users" ("id") deferrable initially immediate '
+    );
+  });
+
   it('test adding incrementing id', function () {
     tableSql = client
       .schemaBuilder()
