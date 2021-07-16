@@ -54,11 +54,15 @@ async function initKnex(env, opts) {
     ? await openKnexfile(env.configPath)
     : mkConfigObj(opts);
 
-  const resolvedConfig = resolveEnvironmentConfig(
-    opts,
-    env.configuration,
-    env.configPath
-  );
+  const resolvedConfig = resolveEnvironmentConfig(opts, env.configuration);
+
+  // override connection, client and migrationsTableName
+  // if specified through cmd line arguments
+
+  resolvedConfig.connection = opts.connection || resolvedConfig.connection
+  resolvedConfig.client = opts.client || resolvedConfig.client
+  resolvedConfig.migrations.tableName = opts.migrationsTableName || resolvedConfig.migrations.tableName
+
   const knex = require(env.modulePath);
   return knex(resolvedConfig);
 }

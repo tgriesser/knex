@@ -8,10 +8,8 @@ const rimrafSync = require('rimraf').sync;
 const path = require('path');
 const sqlite3 = require('sqlite3');
 const { assert } = require('chai');
-const {
-  assertExec,
-  assertExecError,
-} = require('../../jake-util/helpers/migration-test-helper');
+const { promisify } = require('util');
+const { assertExec, assertExecError } = require('../../jake-util/helpers/migration-test-helper');
 const knexfile = require('../../jake-util/knexfile/knexfile.js');
 
 const KNEX = path.normalize(__dirname + '/../../../bin/cli.js');
@@ -700,6 +698,24 @@ test('migrate:list prints migrations both completed and pending', async (temp) =
     migrationsList2Result.stdout,
     `No Pending Migration files Found.`
   );
+});
+
+test('override connection, client and migrations-table-name if specified through cmd line arguments', async (temp) => {
+  const { stdout } = await assertExec(`${KNEX} migrate:latest \
+              --client=sqlite3  --connection=${temp}/db2 \
+              --migrations-directory=test/jake-util/knexfile_migrations \
+              --migrations-table-name=custom_migrations_table`);
+  assert.include(
+    stdout,
+    `Using environment: development\nBatch 1 run: 1 migrations`
+  );
+
+  const db = await new sqlite3.Database(temp + '/db2');
+  const sqlite3GetProm = promisify(db.get.bind(db));
+  const row = await sqlite3GetProm(
+    "SELECT name FROM sqlite_master where type='table' AND name='custom_migrations_table'"
+  );
+  assert.equal(row.name, 'custom_migrations_table');
 });
 
 module.exports = {
