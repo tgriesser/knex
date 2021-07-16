@@ -34,5 +34,16 @@ module.exports = function (knex) {
       expect(data.length).to.equal(1);
       expect(path.basename(data[0])).to.equal('seed2.js');
     });
+
+    it('should run specific seed files in the correct order', async () => {
+      const [data] = await knex.seed.run({
+        directory: 'test/integration/seed/test',
+        specific: ['seed2.js', 'seed1.js'],
+      });
+
+      expect(data.length).to.equal(2);
+      expect(path.basename(data[0])).to.equal('seed2.js');
+      expect(path.basename(data[1])).to.equal('seed1.js');
+    });
   });
 };

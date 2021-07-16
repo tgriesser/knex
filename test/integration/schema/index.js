@@ -4,7 +4,15 @@ const { expect } = require('chai');
 
 const _ = require('lodash');
 const { isString, isObject } = require('../../../lib/util/is');
-const { isPgBased, isMysql, isOracle, isPostgreSQL, isSQLite, isRedshift, isMssql } = require('../../util/db-helpers');
+const {
+  isPgBased,
+  isMysql,
+  isOracle,
+  isPostgreSQL,
+  isSQLite,
+  isRedshift,
+  isMssql,
+} = require('../../util/db-helpers');
 
 const wrapIdentifier = (value, wrap) => {
   return wrap(value ? value.toUpperCase() : value);
@@ -921,7 +929,12 @@ module.exports = (knex) => {
           .then(() => knex.schema.dropTable('test_table_numerics2')));
 
       it('allows alter column syntax', function () {
-        if (isSQLite(knex) || isRedshift(knex) || isMssql(knex) || isOracle(knex)) {
+        if (
+          isSQLite(knex) ||
+          isRedshift(knex) ||
+          isMssql(knex) ||
+          isOracle(knex)
+        ) {
           return;
         }
 

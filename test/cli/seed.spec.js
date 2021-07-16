@@ -96,7 +96,7 @@ describe('seed:run', () => {
     return execCommand(
       `node ${KNEX} seed:run --knexfile=test/jake-util/seeds-knexfile.js --specific=intentionally-non-existing-404-seed.js`,
       {
-        expectedErrorMessage: ['Invalid argument provided', 'does not exist'],
+        expectedErrorMessage: ['Invalid argument provided', 'do(es) not exist'],
       }
     );
   });
