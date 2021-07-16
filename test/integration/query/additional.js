@@ -505,6 +505,190 @@ module.exports = function (knex) {
         });
     });
 
+    it('#4492: gets the columnInfo using a ref', function () {
+      return knex(knex.ref('datatype_test').withSchema('public'))
+        .columnInfo()
+        .testSql(function (tester) {
+          tester(
+            'mysql',
+            'select * from information_schema.columns where table_name = ? and table_schema = ?',
+            null,
+            {
+              enum_value: {
+                defaultValue: null,
+                maxLength: 1,
+                nullable: true,
+                type: 'enum',
+              },
+              uuid: {
+                defaultValue: null,
+                maxLength: 36,
+                nullable: false,
+                type: 'char',
+              },
+            }
+          );
+          tester(
+            'pg',
+            'select * from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = ?',
+            null,
+            {
+              enum_value: {
+                defaultValue: null,
+                maxLength: null,
+                nullable: true,
+                type: 'text',
+              },
+              uuid: {
+                defaultValue: null,
+                maxLength: null,
+                nullable: false,
+                type: 'uuid',
+              },
+            }
+          );
+          tester(
+            'pg-redshift',
+            'select * from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = ?',
+            null,
+            {
+              enum_value: {
+                defaultValue: null,
+                maxLength: 255,
+                nullable: true,
+                type: 'character varying',
+              },
+              uuid: {
+                defaultValue: null,
+                maxLength: 36,
+                nullable: false,
+                type: 'character',
+              },
+            }
+          );
+          tester('sqlite3', 'PRAGMA table_info(`datatype_test`)', [], {
+            enum_value: {
+              defaultValue: null,
+              maxLength: null,
+              nullable: true,
+              type: 'text',
+            },
+            uuid: {
+              defaultValue: null,
+              maxLength: '36',
+              nullable: false,
+              type: 'char',
+            },
+          });
+          tester(
+            'oracledb',
+            "select * from xmltable( '/ROWSET/ROW'\n      passing dbms_xmlgen.getXMLType('\n      select char_col_decl_length, column_name, data_type, data_default, nullable\n      from all_tab_columns where table_name = ''datatype_test'' ')\n      columns\n      CHAR_COL_DECL_LENGTH number, COLUMN_NAME varchar2(200), DATA_TYPE varchar2(106),\n      DATA_DEFAULT clob, NULLABLE varchar2(1))",
+            [],
+            {
+              enum_value: {
+                defaultValue: null,
+                nullable: true,
+                maxLength: 1,
+                type: 'VARCHAR2',
+              },
+              uuid: {
+                defaultValue: null,
+                nullable: false,
+                maxLength: 36,
+                type: 'CHAR',
+              },
+            }
+          );
+          tester(
+            'mssql',
+            "select [COLUMN_NAME], [COLUMN_DEFAULT], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [IS_NULLABLE] from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = 'dbo'",
+            ['datatype_test', 'knex_test'],
+            {
+              enum_value: {
+                defaultValue: null,
+                maxLength: 100,
+                nullable: true,
+                type: 'nvarchar',
+              },
+              uuid: {
+                defaultValue: null,
+                maxLength: null,
+                nullable: false,
+                type: 'uniqueidentifier',
+              },
+            }
+          );
+        });
+    });
+
+    it('#4492: gets the columnInfo with columntype using a ref', function () {
+      return knex(knex.ref('datatype_test').withSchema('public'))
+        .columnInfo('uuid')
+        .testSql(function (tester) {
+          tester(
+            'mysql',
+            'select * from information_schema.columns where table_name = ? and table_schema = ?',
+            null,
+            {
+              defaultValue: null,
+              maxLength: 36,
+              nullable: false,
+              type: 'char',
+            }
+          );
+          tester(
+            'pg',
+            'select * from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = ?',
+            null,
+            {
+              defaultValue: null,
+              maxLength: null,
+              nullable: false,
+              type: 'uuid',
+            }
+          );
+          tester(
+            'pg-redshift',
+            'select * from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = ?',
+            null,
+            {
+              defaultValue: null,
+              maxLength: 36,
+              nullable: false,
+              type: 'character',
+            }
+          );
+          tester('sqlite3', 'PRAGMA table_info(`datatype_test`)', [], {
+            defaultValue: null,
+            maxLength: '36',
+            nullable: false,
+            type: 'char',
+          });
+          tester(
+            'oracledb',
+            "select * from xmltable( '/ROWSET/ROW'\n      passing dbms_xmlgen.getXMLType('\n      select char_col_decl_length, column_name, data_type, data_default, nullable\n      from all_tab_columns where table_name = ''datatype_test'' ')\n      columns\n      CHAR_COL_DECL_LENGTH number, COLUMN_NAME varchar2(200), DATA_TYPE varchar2(106),\n      DATA_DEFAULT clob, NULLABLE varchar2(1))",
+            [],
+            {
+              defaultValue: null,
+              maxLength: 36,
+              nullable: false,
+              type: 'CHAR',
+            }
+          );
+          tester(
+            'mssql',
+            "select [COLUMN_NAME], [COLUMN_DEFAULT], [DATA_TYPE], [CHARACTER_MAXIMUM_LENGTH], [IS_NULLABLE] from information_schema.columns where table_name = ? and table_catalog = ? and table_schema = 'dbo'",
+            null,
+            {
+              defaultValue: null,
+              maxLength: null,
+              nullable: false,
+              type: 'uniqueidentifier',
+            }
+          );
+        });
+    });
+
     it('#2184 - should properly escape table name for SQLite columnInfo', function () {
       if (!isSQLite(knex)) {
         return this.skip();
@@ -940,7 +1124,8 @@ module.exports = function (knex) {
 
       const getProcessesQuery = getProcessesQueries[driverName]();
 
-      return knex.transaction((trx) => addTimeout().transacting(trx))
+      return knex
+        .transaction((trx) => addTimeout().transacting(trx))
         .then(function () {
           expect(true).to.equal(false);
         })
@@ -1022,7 +1207,7 @@ module.exports = function (knex) {
       const getProcessesForDriver = {
         pg: async () => {
           const results = await knex.raw('SELECT * from pg_stat_activity');
-          return _.map(_.filter(results.rows, {state: 'active'}), 'query');
+          return _.map(_.filter(results.rows, { state: 'active' }), 'query');
         },
         mysql: async () => {
           const results = await knex.raw('SHOW PROCESSLIST');
@@ -1043,11 +1228,11 @@ module.exports = function (knex) {
       const getProcesses = getProcessesForDriver[driverName];
 
       try {
-        const promise = query.timeout(50, { cancel: true }).then(_.identity)
+        const promise = query.timeout(50, { cancel: true }).then(_.identity);
 
-        await delay(10)
+        await delay(10);
         const processesBeforeTimeout = await getProcesses();
-        expect(processesBeforeTimeout).to.include(query.toString())
+        expect(processesBeforeTimeout).to.include(query.toString());
 
         await expect(promise).to.eventually.be.rejected.and.to.deep.include({
           timeout: 50,
@@ -1056,7 +1241,7 @@ module.exports = function (knex) {
         });
 
         const processesAfterTimeout = await getProcesses();
-        expect(processesAfterTimeout).to.not.include(query.toString())
+        expect(processesAfterTimeout).to.not.include(query.toString());
       } finally {
         await knexDb.destroy();
       }
