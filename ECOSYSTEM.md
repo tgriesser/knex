@@ -13,3 +13,4 @@ Plugins and tools maintained by the knex team are listed under [Core](#core) whi
 - [`knex-postgis`](https://github.com/jfgodoy/knex-postgis) Extension of Knex with [PostGIS](https://postgis.net/) (geographic objects in PostgreSQL) support.
 - [`knex-serverless-mysql`](https://github.com/MatissJanis/knex-serverless-mysql) Knex dialect for usage with [`serverless-mysql`](https://github.com/jeremydaly/serverless-mysql): persist database connection over multiple serverless (such as AWS Lambda) function invocations.
 - [`pg-mem`](https://github.com/oguimbal/pg-mem) An in-memory emulation of PostgreSQL instance, which can be used for writing blazingly fast tests. Has [adapter for Knex](https://github.com/oguimbal/pg-mem/wiki/Libraries-adapters#-knex).
+- [`knex-mock-client`](https://github.com/felixmosh/knex-mock-client) A mock client which helps you write integration tests which includes DB interactions.
