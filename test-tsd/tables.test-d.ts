@@ -1,35 +1,8 @@
 import { knex, Knex } from '../types';
-import { clientConfig } from './common';
+import { clientConfig, User, Department, Article } from './common';
 import { expectType } from 'tsd';
 
 const knexInstance = knex(clientConfig);
-
-interface User {
-  id: number;
-  age: number;
-  name: string;
-  active: boolean;
-  departmentId: number;
-}
-
-interface Department {
-  id: number;
-  departmentName: string;
-}
-
-interface Article {
-  id: number;
-  subject: string;
-  body?: string;
-  authorId?: string;
-}
-
-interface Ticket {
-  name: string;
-  from: string;
-  to: string;
-  at: Date;
-}
 
 declare module '../types/tables' {
   interface Tables {

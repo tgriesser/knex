@@ -1,5 +1,5 @@
 import { expectAssignable, expectType } from 'tsd';
-import { clientConfig } from './common';
+import { clientConfig, User } from './common';
 
 import knexDefault, { Knex, knex } from '../types';
 import * as knexStar from '../types';
@@ -60,14 +60,6 @@ type DeferredKeySelection<
   _intersectProps: TIntersectProps;
   _unionProps: TUnionProps;
 };
-
-interface User {
-  id: number;
-  age: number;
-  name: string;
-  active: boolean;
-  departmentId: number;
-}
 
 // # Insert onConflict
 expectType<

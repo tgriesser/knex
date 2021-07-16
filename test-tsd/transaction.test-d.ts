@@ -1,15 +1,8 @@
 import knexDefault, { Knex } from '../types';
-import { clientConfig } from './common';
+import { clientConfig, Article } from './common';
 import { expectType } from 'tsd';
 
 const knexInstance = knexDefault(clientConfig);
-
-interface Article {
-  id: number;
-  subject: string;
-  body?: string;
-  authorId?: string;
-}
 
 const main = async () => {
   // # Select:

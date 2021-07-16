@@ -1,16 +1,8 @@
 import Knex from '../types';
-import { clientConfig } from './common';
+import { clientConfig, User } from './common';
 import { expectType } from 'tsd';
 
 const knex = Knex(clientConfig);
-
-interface User {
-  id: number;
-  age: number;
-  name: string;
-  active: boolean;
-  departmentId: number;
-}
 
 const main = async () => {
   expectType<any[]>(await knex('users').select('id').select('age'));
