@@ -326,6 +326,26 @@ module.exports = function (knex) {
         });
     });
 
+    it('calls postProcessResponse on each row of the stream', function () {
+      let count = 0;
+      let called = false;
+      knex.client.config.postProcessResponse = (response, queryContext) => {
+        called = true;
+        return response;
+      };
+      return knex('accounts')
+        .stream(function (rowStream) {
+          rowStream.on('data', function () {
+            count++;
+          });
+        })
+        .then(function () {
+          knex.client.config.postProcessResponse = null;
+          assert(called, 'postProcessResponse has been called');
+          assert(count === 6, 'Six rows should have been streamed');
+        });
+    });
+
     it('returns a stream if not passed a function', function (done) {
       let count = 0;
       const stream = knex('accounts').stream();
