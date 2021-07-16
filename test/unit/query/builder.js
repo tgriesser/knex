@@ -818,6 +818,54 @@ describe('QueryBuilder', () => {
     );
   });
 
+  it('uses fromRaw api, #1767', () => {
+    testsql(qb().select('*').fromRaw('select * from users where age > 18'), {
+      mysql: 'select * from (select * from users where age > 18)',
+      mssql: 'select * from (select * from users where age > 18)',
+      pg: 'select * from (select * from users where age > 18)',
+      'pg-redshift': 'select * from (select * from users where age > 18)',
+    });
+  });
+
+  it('uses fromRaw api with a query function, #1767', () => {
+    const subquery = qb()
+      .select(raw('? as f', ['inner raw select']))
+      .as('g');
+    testsql(
+      qb()
+        .select(raw('?', ['outer raw select']), 'g.f')
+        .from(subquery)
+        .where('g.secret', 123),
+      {
+        mysql: {
+          sql:
+            'select ?, `g`.`f` from (select ? as f) as `g` where `g`.`secret` = ?',
+          bindings: ['outer raw select', 'inner raw select', 123],
+        },
+        mssql: {
+          sql:
+            'select ?, [g].[f] from (select ? as f) as [g] where [g].[secret] = ?',
+          bindings: ['outer raw select', 'inner raw select', 123],
+        },
+        oracledb: {
+          sql:
+            'select ?, "g"."f" from (select ? as f) "g" where "g"."secret" = ?',
+          bindings: ['outer raw select', 'inner raw select', 123],
+        },
+        pg: {
+          sql:
+            'select ?, "g"."f" from (select ? as f) as "g" where "g"."secret" = ?',
+          bindings: ['outer raw select', 'inner raw select', 123],
+        },
+        'pg-redshift': {
+          sql:
+            'select ?, "g"."f" from (select ? as f) as "g" where "g"."secret" = ?',
+          bindings: ['outer raw select', 'inner raw select', 123],
+        },
+      }
+    );
+  });
+
   it('basic wheres', () => {
     testsql(qb().select('*').from('users').where('id', '=', 1), {
       mysql: {
