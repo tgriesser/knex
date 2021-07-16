@@ -846,6 +846,24 @@ describe('QueryBuilder', () => {
     });
   });
 
+  it('uses whereLike, #2265', () => {
+    testsql(qb().select('*').from('users').whereLike('name', 'luk%'), {
+      mysql: "select * from `users` where `name` like 'luk%' COLLATE utf8_bin",
+      pg: 'select * from "users" where "name" like \'luk%\'',
+      mssql:
+        "select * from [users] where [name] collate SQL_Latin1_General_CP1_CS_AS like 'luk%'",
+    });
+  });
+
+  it('uses whereILike, #2265', () => {
+    testsql(qb().select('*').from('users').whereILike('name', 'luk%'), {
+      mysql: "select * from `users` where `name` like 'luk%'",
+      pg: 'select * from "users" where "name" ilike \'luk%\'',
+      mssql:
+        "select * from [users] where [name] collate SQL_Latin1_General_CP1_CI_AS like 'luk%'",
+    });
+  });
+
   it('whereColumn', () => {
     testsql(
       qb()
