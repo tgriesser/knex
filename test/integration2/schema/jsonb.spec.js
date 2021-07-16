@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { getAllDbs, getKnexForDb } = require('../util/knex-instance-provider');
 
 describe('Schema', () => {
-  describe('json columns', () => {
+  describe('jsonb columns', () => {
     getAllDbs()
       // no support for json in mssql and oracledb, omit test
       .filter((db) => !['mssql', 'oracledb'].includes(db))
