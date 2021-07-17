@@ -14,6 +14,7 @@ const {
   isMysql,
   isMssql,
   isPgBased,
+  isPgNative,
 } = require('../../util/db-helpers');
 const { DRIVER_NAMES: drivers } = require('../../util/constants');
 
@@ -294,6 +295,8 @@ module.exports = function (knex) {
         [drivers.MySQL]: 'SHOW TABLES',
         [drivers.MySQL2]: 'SHOW TABLES',
         [drivers.PostgreSQL]:
+          "SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
+        [drivers.PgNative]:
           "SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
         [drivers.Redshift]:
           "SELECT table_name FROM information_schema.tables WHERE table_schema='public'",
@@ -819,6 +822,9 @@ module.exports = function (knex) {
         [drivers.PostgreSQL]: function () {
           return knex.raw('SELECT * from pg_stat_activity');
         },
+        [drivers.PgNative]: function () {
+          return knex.raw('SELECT * from pg_stat_activity');
+        },
         [drivers.MySQL]: function () {
           return knex.raw('SHOW PROCESSLIST');
         },
@@ -930,13 +936,16 @@ module.exports = function (knex) {
       }
 
       const getProcessesQueries = {
-        pg: function () {
+        [drivers.PostgreSQL]: function () {
           return knex.raw('SELECT * from pg_stat_activity');
         },
-        mysql: function () {
+        [drivers.PgNative]: function () {
+          return knex.raw('SELECT * from pg_stat_activity');
+        },
+        [drivers.MySQL]: function () {
           return knex.raw('SHOW PROCESSLIST');
         },
-        mysql2: function () {
+        [drivers.MySQL2]: function () {
           return knex.raw('SHOW PROCESSLIST');
         },
       };
@@ -1033,15 +1042,19 @@ module.exports = function (knex) {
 
       // We must use the original knex instance without the exhausted pool to list running queries
       const getProcessesForDriver = {
-        pg: async () => {
+        [drivers.PostgreSQL]: async () => {
           const results = await knex.raw('SELECT * from pg_stat_activity');
           return _.map(_.filter(results.rows, { state: 'active' }), 'query');
         },
-        mysql: async () => {
+        [drivers.PgNative]: async () => {
+          const results = await knex.raw('SELECT * from pg_stat_activity');
+          return _.map(_.filter(results.rows, { state: 'active' }), 'query');
+        },
+        [drivers.MySQL]: async () => {
           const results = await knex.raw('SHOW PROCESSLIST');
           return _.map(results[0], 'Info');
         },
-        mysql2: async () => {
+        [drivers.MySQL2]: async () => {
           const results = await knex.raw('SHOW PROCESSLIST');
           return _.map(results[0], 'Info');
         },
@@ -1091,6 +1104,8 @@ module.exports = function (knex) {
       const rawTestQueries = {
         [drivers.PostgreSQL]: (sleepSeconds) =>
           `SELECT pg_sleep(${sleepSeconds})`,
+        [drivers.PgNative]: (sleepSeconds) =>
+          `SELECT pg_sleep(${sleepSeconds})`,
       };
 
       const driverName = knex.client.driverName;
@@ -1124,7 +1139,7 @@ module.exports = function (knex) {
           getTestQuery().timeout(queryTimeout, { cancel: true })
         ).to.be.eventually.rejected.and.deep.include({
           timeout: queryTimeout,
-          name: 'error',
+          name: isPgNative(knex) ? 'Error' : 'error',
           message: `After query timeout of ${queryTimeout}ms exceeded, cancelling of query failed.`,
         });
 

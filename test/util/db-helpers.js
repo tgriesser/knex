@@ -9,6 +9,10 @@ function isPostgreSQL(knex) {
   return isOneOfDbs(knex, [drivers.PostgreSQL, drivers.PgNative]);
 }
 
+function isPgNative(knex) {
+  return getDriverName(knex) === drivers.PgNative;
+}
+
 function isPgBased(knex) {
   return isOneOfDbs(knex, [
     drivers.PostgreSQL,
@@ -53,6 +57,7 @@ module.exports = {
   isMssql,
   isOracle,
   isPostgreSQL,
+  isPgNative,
   isPgBased,
   isRedshift,
   isSQLite,
